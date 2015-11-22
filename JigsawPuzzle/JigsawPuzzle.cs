@@ -149,55 +149,55 @@ namespace JigsawPuzzleEffect
 
 
             Bitmap puzzleBitmap = new Bitmap((int)(100 * Amount1), (int)(100 * Amount1), System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            Graphics g = Graphics.FromImage(puzzleBitmap);
-
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            Graphics puzzleGraphics = Graphics.FromImage(puzzleBitmap);
+            puzzleGraphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
             Pen puzzlePen = new Pen(Amount4, Amount2);
 
-            // Create points that define curve.
-            Point xPoint0 = new Point((int)(-50 * Amount1), (int)(16 * Amount1));
-            Point xPoint1 = new Point((int)(0 * Amount1), (int)(16 * Amount1));
-            Point xPoint2 = new Point((int)(13 * Amount1), (int)(28 * Amount1));
-            Point xPoint3 = new Point((int)(9 * Amount1), (int)(50 * Amount1));
+            // Create points that define the horizontal curve.
+            Point horPoint0 = new Point((int)(-50 * Amount1), (int)(16 * Amount1));
+            Point horPoint1 = new Point((int)(0 * Amount1), (int)(16 * Amount1));
+            Point horPoint2 = new Point((int)(13 * Amount1), (int)(28 * Amount1));
+            Point horPoint3 = new Point((int)(9 * Amount1), (int)(50 * Amount1));
 
-            Point xPoint4 = new Point((int)(49 * Amount1), (int)(49 * Amount1));
+            Point horPoint4 = new Point((int)(49 * Amount1), (int)(49 * Amount1));
 
-            Point xPoint5 = new Point((int)(90 * Amount1), (int)(49 * Amount1));
-            Point xPoint6 = new Point((int)(86 * Amount1), (int)(71 * Amount1));
-            Point xPoint7 = new Point((int)(99 * Amount1), (int)(83 * Amount1));
-            Point xPoint8 = new Point((int)(149 * Amount1), (int)(83 * Amount1));
+            Point horPoint5 = new Point((int)(90 * Amount1), (int)(49 * Amount1));
+            Point horPoint6 = new Point((int)(86 * Amount1), (int)(71 * Amount1));
+            Point horPoint7 = new Point((int)(99 * Amount1), (int)(83 * Amount1));
+            Point horPoint8 = new Point((int)(149 * Amount1), (int)(83 * Amount1));
 
-            Point[] xCurvePoints = { xPoint0, xPoint1, xPoint2, xPoint3, xPoint4, xPoint5, xPoint6, xPoint7, xPoint8 };
+            Point[] horCurvePoints = { horPoint0, horPoint1, horPoint2, horPoint3, horPoint4, horPoint5, horPoint6, horPoint7, horPoint8 };
 
-            // Draw curve to screen.
-            g.DrawCurve(puzzlePen, xCurvePoints);
+            // Draw the horizontal curve to graphics object.
+            puzzleGraphics.DrawCurve(puzzlePen, horCurvePoints);
 
 
-            // Create points that define curve.
-            Point yPoint0 = new Point((int)(83 * Amount1), (int)(-50 * Amount1));
-            Point yPoint1 = new Point((int)(83 * Amount1), (int)(0 * Amount1));
-            Point yPoint2 = new Point((int)(73 * Amount1), (int)(13 * Amount1));
-            Point yPoint3 = new Point((int)(49 * Amount1), (int)(9 * Amount1));
+            // Create points that define the vertical curve.
+            Point verPoint0 = new Point((int)(83 * Amount1), (int)(-50 * Amount1));
+            Point verPoint1 = new Point((int)(83 * Amount1), (int)(0 * Amount1));
+            Point verPoint2 = new Point((int)(73 * Amount1), (int)(13 * Amount1));
+            Point verPoint3 = new Point((int)(49 * Amount1), (int)(9 * Amount1));
 
-            Point yPoint4 = new Point((int)(50 * Amount1), (int)(50 * Amount1));
+            Point verPoint4 = new Point((int)(50 * Amount1), (int)(50 * Amount1));
 
-            Point yPoint5 = new Point((int)(50 * Amount1), (int)(90 * Amount1));
-            Point yPoint6 = new Point((int)(28 * Amount1), (int)(86 * Amount1));
-            Point yPoint7 = new Point((int)(16 * Amount1), (int)(99 * Amount1));
-            Point yPoint8 = new Point((int)(16 * Amount1), (int)(149 * Amount1));
+            Point verPoint5 = new Point((int)(50 * Amount1), (int)(90 * Amount1));
+            Point verPoint6 = new Point((int)(28 * Amount1), (int)(86 * Amount1));
+            Point verPoint7 = new Point((int)(16 * Amount1), (int)(99 * Amount1));
+            Point verPoint8 = new Point((int)(16 * Amount1), (int)(149 * Amount1));
 
-            Point[] yCurvePoints = { yPoint0, yPoint1, yPoint2, yPoint3, yPoint4, yPoint5, yPoint6, yPoint7, yPoint8 };
+            Point[] verCurvePoints = { verPoint0, verPoint1, verPoint2, verPoint3, verPoint4, verPoint5, verPoint6, verPoint7, verPoint8 };
 
-            // Draw curve to screen.
-            g.DrawCurve(puzzlePen, yCurvePoints);
+            // Draw the vertical curve to graphics object.
+            puzzleGraphics.DrawCurve(puzzlePen, verCurvePoints);
 
             puzzlePen.Dispose();
 
             puzzleSurface = Surface.CopyFromBitmap(puzzleBitmap);
+            puzzleBitmap.Dispose();
         }
 
-        protected override unsafe void OnRender(Rectangle[] rois, int startIndex, int length)
+        protected override void OnRender(Rectangle[] rois, int startIndex, int length)
         {
             if (length == 0) return;
             for (int i = startIndex; i < startIndex + length; ++i)
@@ -230,19 +230,19 @@ namespace JigsawPuzzleEffect
         private static ColorBgra GetBilinearSampleMirrored(Surface tile, float x, float y)
         {
             int width = tile.Width;
-            int num = (int)Math.Floor((double)(x / (float)width));
-            x -= (float)(num * width);
+            int num = (int)Math.Floor(x / width);
+            x -= num * width;
             int height = tile.Height;
-            int num2 = (int)Math.Floor((double)(y / (float)height));
-            y -= (float)(num2 * height);
+            int num2 = (int)Math.Floor(y / height);
+            y -= num2 * height;
 
             if (num2 % 2 != 0)
             {
-                y = (float)height - (y + 1f);
+                y = height - (y + 1);
             }
             if (num % 2 != 0)
             {
-                x = (float)width - (x + 1f);
+                x = width - (x + 1);
             }
 
             return tile.GetBilinearSampleClamped(x, y);
@@ -268,7 +268,7 @@ namespace JigsawPuzzleEffect
 
                     if (Amount3)
                     {
-                        sourcePixel.A = Int32Util.ClampToByte((int)(255 - puzzlePixel.A));
+                        sourcePixel.A = Int32Util.ClampToByte(255 - puzzlePixel.A);
                         finalPixel = sourcePixel;
                     }
                     else
